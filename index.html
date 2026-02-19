@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Портфолио</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-dark: #0c1218;
+      --accent: #e8a84a;
+      --accent-light: #f0c078;
+      --accent-dim: rgba(232, 168, 74, 0.15);
+      --text: #e8ecf0;
+      --text-muted: #8b9aaa;
+      --border: rgba(232, 168, 74, 0.2);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+      background: linear-gradient(145deg, #0c1218 0%, #0f1820 40%, #0a1016 70%, #0e161d 100%);
+      min-height: 100vh;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    /* Entrance animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero {
+      animation: fadeInUp 0.8s ease-out both;
+    }
+
+    .hero .title {
+      animation: fadeInUp 0.6s ease-out 0.15s both;
+    }
+
+    .hero .description {
+      animation: fadeInUp 0.6s ease-out 0.3s both;
+    }
+
+    .about {
+      animation: fadeInUp 0.7s ease-out 0.35s both;
+    }
+
+    .contacts {
+      animation: fadeInUp 0.7s ease-out 0.5s both;
+    }
+
+    footer {
+      animation: fadeInUp 0.6s ease-out 0.6s both;
+    }
+
+    /* Hero */
+    .hero {
+      min-height: 70vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 3rem 0;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 6vw, 3rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(90deg, #fff 0%, var(--accent-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero .title {
+      font-size: 1.125rem;
+      color: var(--accent);
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+
+    .hero .description {
+      font-size: 1.125rem;
+      color: var(--text-muted);
+      max-width: 32ch;
+    }
+
+    /* Video */
+    .video-section {
+      padding: 2rem 0 3rem;
+      border-top: 1px solid var(--border);
+      animation: fadeInUp 0.7s ease-out 0.25s both;
+    }
+
+    .video-wrapper {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      background: var(--bg-dark);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .video-poster {
+      position: absolute;
+      inset: 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-dark) center/cover no-repeat;
+      transition: opacity 0.3s ease;
+    }
+
+    .video-wrapper.is-playing .video-poster {
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    .video-poster::after {
+      content: '';
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: rgba(232, 168, 74, 0.9);
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E") center/50% no-repeat;
+      -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E") center/50% no-repeat;
+      transition: transform 0.2s ease;
+    }
+
+    .video-poster:hover::after {
+      transform: scale(1.08);
+    }
+
+    .video-wrapper iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .video-wrapper iframe.video-embed {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .video-wrapper.is-playing iframe.video-embed {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Section */
+    section {
+      padding: 3rem 0;
+      border-top: 1px solid var(--border);
+    }
+
+    section h2 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      margin-bottom: 1.25rem;
+    }
+
+    .about p {
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      max-width: 55ch;
+    }
+
+    .about p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Contacts */
+    .contacts-list {
+      list-style: none;
+    }
+
+    .contacts-list li {
+      margin-bottom: 0.75rem;
+    }
+
+    .contacts-list a {
+      color: var(--text);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      margin-left: -0.75rem;
+      border-radius: 0.5rem;
+      transition: color 0.25s ease, background 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+      position: relative;
+    }
+
+    .contacts-list a::after {
+      content: '';
+      position: absolute;
+      left: 0.75rem;
+      right: 0.75rem;
+      bottom: 0.4rem;
+      height: 1px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.25s ease;
+    }
+
+    .contacts-list a:hover {
+      color: var(--accent-light);
+      background: var(--accent-dim);
+      transform: translateX(4px);
+      box-shadow: 0 2px 12px var(--accent-dim);
+    }
+
+    .contacts-list a:hover::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+
+    .contacts-list .label {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      min-width: 4rem;
+      transition: color 0.25s ease;
+    }
+
+    .contacts-list a:hover .label {
+      color: var(--accent);
+    }
+
+    footer {
+      padding: 2rem 0;
+      text-align: center;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 1.25rem 1rem;
+      }
+
+      .hero {
+        min-height: 60vh;
+        padding: 2rem 0;
+      }
+
+      section {
+        padding: 2rem 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Редактируйте текст ниже в Cursor, сохраните (Cmd+S), затем обновите страницу в браузере (F5) -->
+    <header class="hero">
+      <h1>Томас Раби</h1>
+      <p class="title">Chief Mixologist, CEO Gimme Dat®</p>
+      <p class="description">Создаю вкусные штуки с 2016 года. Сооснователь бренда Mirafruit.</p>
+    </header>
+
+    <section class="video-section">
+      <div class="video-wrapper" id="video-wrapper">
+        <div class="video-poster" id="video-poster" style="background-image: url('https://i.pinimg.com/736x/94/c7/4a/94c74ab56150bf877d2061445b1a66f6.jpg')" aria-label="Нажмите, чтобы воспроизвести"></div>
+        <iframe class="video-embed" data-src="https://www.youtube.com/embed/SDg2RKLwzNo?autoplay=1" title="YouTube video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+      </div>
+    </section>
+    <script>
+      (function() {
+        var wrapper = document.getElementById('video-wrapper');
+        var poster = document.getElementById('video-poster');
+        var iframe = wrapper && wrapper.querySelector('iframe.video-embed');
+        if (!wrapper || !poster || !iframe) return;
+        poster.addEventListener('click', function() {
+          var src = iframe.getAttribute('data-src');
+          if (src) { iframe.setAttribute('src', src); iframe.removeAttribute('data-src'); }
+          wrapper.classList.add('is-playing');
+        });
+      })();
+    </script>
+
+    <section class="about">
+      <h2>О себе</h2>
+      <p>
+        Работаю в разработке пищевых продуктов уже несколько лет. Люблю минимализм, простые и вкусные рецепты. Верю в будущее функционального подхода к питанию и образц жизни.
+      </p>
+      <p>
+        В свободное время экспериментирую с новыми технологиями, читаю про AI-агентов, иногда делаю что-то для души — от скетчей до маленьких сайд-проектов.
+      </p>
+      <p>
+        Открыт к коллаборациям и интересным проектам. Если у вас есть идея — напишите, может найду время😉
+      </p>
+    </section>
+
+    <section class="contacts">
+      <h2>Контакты</h2>
+      <ul class="contacts-list">
+        <li><a href="mailto:tomas@mirafruit.ru"><span class="label">Email</span> tomas@mirafruit.ru</a></li>
+        <li><a href="https://t.me/easee_peasee" target="_blank" rel="noopener"><span class="label">Telegram</span> @easee_peasee</a></li>
+        <li><a href="https://github.com/Tomasito133" target="_blank" rel="noopener"><span class="label">GitHub</span> github.com/Tomasito133</a></li>
+      </ul>
+    </section>
+
+    <footer>
+      © 2026 · Сделано с заботой
+    </footer>
+  </div>
+</body>
+</html>

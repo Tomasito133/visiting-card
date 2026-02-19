@@ -1,0 +1,35 @@
+# Секреты и конфиденциальные данные — никогда не коммитить
+.env
+.env.*
+!.env.example
+*.env
+.env.local
+.env.development
+.env.production
+*.pem
+*.key
+id_rsa
+id_ed25519
+id_ecdsa
+*credentials*
+*secret*
+secrets/
+*.secret
+
+# Системные и служебные
+.DS_Store
+Thumbs.db
+*.log
+node_modules/
+
+# IDE и временные файлы
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Сборки и кэш (если позже добавите)
+dist/
+build/
+.cache/
