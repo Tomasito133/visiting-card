@@ -1,6 +1,6 @@
 /**
  * AI Chat API — Vercel Serverless Function
- * Использует MiniMax API для ответов на основе базы знаний
+ * Использует Groq API (Llama 3.3) для ответов на основе базы знаний
  */
 
 import { readFileSync } from 'fs';
@@ -81,10 +81,10 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const API_KEY = process.env.MINIMAX_API_KEY;
+  const API_KEY = process.env.GROQ_API_KEY;
   
   if (!API_KEY) {
-    return res.status(500).json({ error: 'API key not configured' });
+    return res.status(500).json({ error: 'GROQ_API_KEY not configured' });
   }
 
   try {
@@ -94,28 +94,28 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Message required' });
     }
 
-    const response = await fetch('https://api.minimax.io/v1/text/chatcompletion_v2', {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${API_KEY}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'M2-her',
+        model: 'llama-3.3-70b-versatile',
         messages: [
-          { role: 'system', name: 'Агент Томасович', content: SYSTEM_PROMPT },
-          { role: 'user', name: 'User', content: message }
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'user', content: message }
         ],
-        max_completion_tokens: 1000,
-        temperature: 0.8
+        max_tokens: 500,
+        temperature: 0.7
       })
     });
 
     const data = await response.json();
     
-    if (!response.ok || (data.base_resp && data.base_resp.status_code !== 0)) {
-      const errMsg = data.base_resp?.status_msg || data.error?.message || JSON.stringify(data);
-      console.error('MiniMax API error:', errMsg);
+    if (!response.ok) {
+      const errMsg = data.error?.message || JSON.stringify(data);
+      console.error('Groq API error:', errMsg);
       return res.status(500).json({ error: errMsg });
     }
 
