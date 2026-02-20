@@ -120,9 +120,10 @@ export default async function handler(req, res) {
 
     const data = await response.json();
     
-    if (!response.ok || data.base_resp?.status_code !== 0) {
-      console.error('MiniMax API error:', JSON.stringify(data));
-      throw new Error(data.base_resp?.status_msg || data.error?.message || 'API error');
+    if (!response.ok || (data.base_resp && data.base_resp.status_code !== 0)) {
+      const errMsg = data.base_resp?.status_msg || data.error?.message || JSON.stringify(data);
+      console.error('MiniMax API error:', errMsg);
+      return res.status(500).json({ error: errMsg });
     }
 
     const content = data?.choices?.[0]?.message?.content || 'Извините, не удалось получить ответ.';
@@ -130,7 +131,7 @@ export default async function handler(req, res) {
     res.status(200).json({ response: content });
     
   } catch (err) {
-    console.error('Chat API error:', err.message);
-    res.status(500).json({ error: 'Произошла ошибка. Попробуйте позже.' });
+    console.error('Chat API error:', err.message, err.stack);
+    res.status(500).json({ error: 'Ошибка: ' + err.message });
   }
 }
