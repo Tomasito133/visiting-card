@@ -12,13 +12,30 @@
     }
 
     :root {
-      --bg-dark: #0c1218;
+      --bg-primary: #0c1218;
+      --bg-secondary: #0f1820;
+      --bg-tertiary: #1a2530;
       --accent: #e8a84a;
       --accent-light: #f0c078;
       --accent-dim: rgba(232, 168, 74, 0.15);
       --text: #e8ecf0;
       --text-muted: #8b9aaa;
       --border: rgba(232, 168, 74, 0.2);
+      --shadow: rgba(0, 0, 0, 0.4);
+      --gradient-bg: linear-gradient(145deg, #0c1218 0%, #0f1820 40%, #0a1016 70%, #0e161d 100%);
+      --hero-gradient: linear-gradient(90deg, #fff 0%, var(--accent-light) 100%);
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f8f9fa;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #e9ecef;
+      --text: #1a1a2e;
+      --text-muted: #6c757d;
+      --border: rgba(232, 168, 74, 0.3);
+      --shadow: rgba(0, 0, 0, 0.1);
+      --gradient-bg: linear-gradient(145deg, #f8f9fa 0%, #ffffff 40%, #f1f3f4 70%, #e9ecef 100%);
+      --hero-gradient: linear-gradient(90deg, #1a1a2e 0%, #c4883a 100%);
     }
 
     html {
@@ -27,10 +44,11 @@
 
     body {
       font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
-      background: linear-gradient(145deg, #0c1218 0%, #0f1820 40%, #0a1016 70%, #0e161d 100%);
+      background: var(--gradient-bg);
       min-height: 100vh;
       color: var(--text);
       line-height: 1.6;
+      transition: background 0.3s ease, color 0.3s ease;
     }
 
     .container {
@@ -89,7 +107,7 @@
       font-weight: 700;
       letter-spacing: -0.02em;
       margin-bottom: 0.5rem;
-      background: linear-gradient(90deg, #fff 0%, var(--accent-light) 100%);
+      background: var(--hero-gradient);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -120,8 +138,9 @@
       aspect-ratio: 16 / 9;
       border-radius: 0.75rem;
       overflow: hidden;
-      background: var(--bg-dark);
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+      background: var(--bg-primary);
+      box-shadow: 0 4px 24px var(--shadow);
+      transition: background 0.3s ease, box-shadow 0.3s ease;
     }
 
     .video-poster {
@@ -131,7 +150,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: var(--bg-dark) center/cover no-repeat;
+      background: var(--bg-primary) center/cover no-repeat;
       transition: opacity 0.3s ease;
     }
 
@@ -260,7 +279,44 @@
       text-align: center;
       font-size: 0.8125rem;
       color: var(--text-muted);
+      transition: color 0.3s ease;
     }
+
+    /* Theme Toggle */
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 999998;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--bg-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 12px var(--shadow);
+      transition: all 0.3s ease;
+    }
+    .theme-toggle:hover {
+      transform: scale(1.08);
+      box-shadow: 0 4px 20px var(--shadow);
+    }
+    .theme-toggle svg {
+      width: 22px;
+      height: 22px;
+      fill: var(--accent);
+      transition: transform 0.3s ease;
+    }
+    .theme-toggle:hover svg {
+      transform: rotate(15deg);
+    }
+    .theme-toggle .icon-sun { display: none; }
+    .theme-toggle .icon-moon { display: block; }
+    [data-theme="light"] .theme-toggle .icon-sun { display: block; }
+    [data-theme="light"] .theme-toggle .icon-moon { display: none; }
 
     @media (max-width: 480px) {
       .container {
@@ -279,6 +335,12 @@
   </style>
 </head>
 <body>
+  <!-- Theme Toggle Button -->
+  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Переключить тему">
+    <svg class="icon-moon" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+    <svg class="icon-sun" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
+  </button>
+
   <div class="container">
     <!-- Редактируйте текст ниже в Cursor, сохраните (Cmd+S), затем обновите страницу в браузере (F5) -->
     <header class="hero">
@@ -366,7 +428,7 @@
       width: 60px;
       height: 60px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #e8a84a 0%, #f0c078 100%);
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
       border: none;
       cursor: pointer;
       box-shadow: 0 4px 20px rgba(232, 168, 74, 0.4);
@@ -382,7 +444,7 @@
     #ai-chat-toggle svg {
       width: 28px;
       height: 28px;
-      fill: #0c1218;
+      fill: var(--bg-primary);
     }
     #ai-chat-window {
       position: absolute;
@@ -390,18 +452,19 @@
       right: 0;
       width: 380px;
       height: 520px;
-      background: #0f1820;
+      background: var(--bg-secondary);
       border-radius: 16px;
-      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 8px 40px var(--shadow);
       display: none;
       flex-direction: column;
       overflow: hidden;
-      border: 1px solid rgba(232, 168, 74, 0.2);
+      border: 1px solid var(--border);
+      transition: background 0.3s ease, box-shadow 0.3s ease;
     }
     #ai-chat-window.open { display: flex; }
     .ai-chat-header {
-      background: linear-gradient(135deg, #e8a84a 0%, #d4963e 100%);
-      color: #0c1218;
+      background: linear-gradient(135deg, var(--accent) 0%, #d4963e 100%);
+      color: var(--bg-primary);
       padding: 16px 20px;
       font-weight: 600;
       font-size: 1rem;
@@ -412,7 +475,7 @@
     .ai-chat-close {
       background: none;
       border: none;
-      color: #0c1218;
+      color: var(--bg-primary);
       cursor: pointer;
       font-size: 24px;
       line-height: 1;
@@ -427,7 +490,8 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
-      background: #0c1218;
+      background: var(--bg-primary);
+      transition: background 0.3s ease;
     }
     .ai-message {
       max-width: 85%;
@@ -437,17 +501,18 @@
       line-height: 1.5;
     }
     .ai-message.user {
-      background: linear-gradient(135deg, #e8a84a 0%, #d4963e 100%);
-      color: #0c1218;
+      background: linear-gradient(135deg, var(--accent) 0%, #d4963e 100%);
+      color: var(--bg-primary);
       align-self: flex-end;
       border-bottom-right-radius: 4px;
     }
     .ai-message.assistant {
-      background: #1a2530;
-      color: #e8ecf0;
+      background: var(--bg-tertiary);
+      color: var(--text);
       align-self: flex-start;
       border-bottom-left-radius: 4px;
-      border: 1px solid rgba(232, 168, 74, 0.15);
+      border: 1px solid var(--border);
+      transition: background 0.3s ease, color 0.3s ease;
     }
     .ai-message.error {
       background: rgba(220, 38, 38, 0.15);
@@ -457,29 +522,30 @@
     }
     .ai-chat-input {
       padding: 16px;
-      border-top: 1px solid rgba(232, 168, 74, 0.15);
+      border-top: 1px solid var(--border);
       display: flex;
       gap: 10px;
-      background: #0f1820;
+      background: var(--bg-secondary);
+      transition: background 0.3s ease;
     }
     .ai-chat-input input {
       flex: 1;
       padding: 12px 16px;
-      border: 1px solid rgba(232, 168, 74, 0.2);
+      border: 1px solid var(--border);
       border-radius: 24px;
       outline: none;
       font-size: 14px;
-      background: #0c1218;
-      color: #e8ecf0;
-      transition: border-color 0.2s;
+      background: var(--bg-primary);
+      color: var(--text);
+      transition: border-color 0.2s, background 0.3s ease, color 0.3s ease;
     }
-    .ai-chat-input input::placeholder { color: #8b9aaa; }
-    .ai-chat-input input:focus { border-color: #e8a84a; }
+    .ai-chat-input input::placeholder { color: var(--text-muted); }
+    .ai-chat-input input:focus { border-color: var(--accent); }
     .ai-chat-input button {
       width: 44px;
       height: 44px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #e8a84a 0%, #d4963e 100%);
+      background: linear-gradient(135deg, var(--accent) 0%, #d4963e 100%);
       border: none;
       cursor: pointer;
       display: flex;
@@ -489,21 +555,22 @@
     }
     .ai-chat-input button:hover { transform: scale(1.05); }
     .ai-chat-input button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-    .ai-chat-input button svg { width: 20px; height: 20px; fill: #0c1218; }
+    .ai-chat-input button svg { width: 20px; height: 20px; fill: var(--bg-primary); }
     .ai-typing {
       display: flex;
       gap: 4px;
       padding: 12px 16px;
-      background: #1a2530;
+      background: var(--bg-tertiary);
       border-radius: 16px;
       border-bottom-left-radius: 4px;
       width: fit-content;
-      border: 1px solid rgba(232, 168, 74, 0.15);
+      border: 1px solid var(--border);
+      transition: background 0.3s ease;
     }
     .ai-typing span {
       width: 8px;
       height: 8px;
-      background: #e8a84a;
+      background: var(--accent);
       border-radius: 50%;
       animation: typing 1.4s infinite;
     }
@@ -519,11 +586,36 @@
         height: 70vh;
         right: -10px;
       }
+      .theme-toggle {
+        top: 12px;
+        right: 12px;
+        width: 42px;
+        height: 42px;
+      }
     }
   </style>
 
   <script>
     (function() {
+      // Theme Toggle
+      function initTheme() {
+        var saved = localStorage.getItem('theme');
+        if (saved) {
+          document.documentElement.setAttribute('data-theme', saved);
+        } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      }
+      initTheme();
+
+      window.toggleTheme = function() {
+        var current = document.documentElement.getAttribute('data-theme');
+        var next = current === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+      };
+
+      // Chat Widget
       var welcomeMessage = "Здравствуйте! Я Агент Томасович — AI-консультант по разработке пищевых продуктов. Могу рассказать об услугах, ценах и процессе работы. О чём хотите узнать?";
       var apiUrl = "/api/chat";
 
