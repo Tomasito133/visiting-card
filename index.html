@@ -333,5 +333,277 @@
       © 2026 · Сделано с заботой
     </footer>
   </div>
+
+  <!-- AI Chat Widget -->
+  <div id="ai-chat-widget">
+    <button id="ai-chat-toggle" onclick="toggleChat()" aria-label="Открыть чат">
+      <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+    </button>
+    <div id="ai-chat-window">
+      <div class="ai-chat-header">
+        <span id="chat-title">Агент Томасович</span>
+        <button class="ai-chat-close" onclick="closeChat()">×</button>
+      </div>
+      <div class="ai-chat-messages" id="chat-messages"></div>
+      <div class="ai-chat-input">
+        <input type="text" id="user-message" placeholder="Напишите сообщение..." onkeypress="handleKeyPress(event)">
+        <button id="send-btn" onclick="sendMessage()">
+          <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    #ai-chat-widget {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 999999;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    }
+    #ai-chat-toggle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #e8a84a 0%, #f0c078 100%);
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(232, 168, 74, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    #ai-chat-toggle:hover {
+      transform: scale(1.08);
+      box-shadow: 0 6px 28px rgba(232, 168, 74, 0.5);
+    }
+    #ai-chat-toggle svg {
+      width: 28px;
+      height: 28px;
+      fill: #0c1218;
+    }
+    #ai-chat-window {
+      position: absolute;
+      bottom: 80px;
+      right: 0;
+      width: 380px;
+      height: 520px;
+      background: #0f1820;
+      border-radius: 16px;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid rgba(232, 168, 74, 0.2);
+    }
+    #ai-chat-window.open { display: flex; }
+    .ai-chat-header {
+      background: linear-gradient(135deg, #e8a84a 0%, #d4963e 100%);
+      color: #0c1218;
+      padding: 16px 20px;
+      font-weight: 600;
+      font-size: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .ai-chat-close {
+      background: none;
+      border: none;
+      color: #0c1218;
+      cursor: pointer;
+      font-size: 24px;
+      line-height: 1;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    .ai-chat-close:hover { opacity: 1; }
+    .ai-chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: #0c1218;
+    }
+    .ai-message {
+      max-width: 85%;
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .ai-message.user {
+      background: linear-gradient(135deg, #e8a84a 0%, #d4963e 100%);
+      color: #0c1218;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+    .ai-message.assistant {
+      background: #1a2530;
+      color: #e8ecf0;
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+      border: 1px solid rgba(232, 168, 74, 0.15);
+    }
+    .ai-message.error {
+      background: rgba(220, 38, 38, 0.15);
+      color: #f87171;
+      font-size: 13px;
+      border: 1px solid rgba(220, 38, 38, 0.3);
+    }
+    .ai-chat-input {
+      padding: 16px;
+      border-top: 1px solid rgba(232, 168, 74, 0.15);
+      display: flex;
+      gap: 10px;
+      background: #0f1820;
+    }
+    .ai-chat-input input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1px solid rgba(232, 168, 74, 0.2);
+      border-radius: 24px;
+      outline: none;
+      font-size: 14px;
+      background: #0c1218;
+      color: #e8ecf0;
+      transition: border-color 0.2s;
+    }
+    .ai-chat-input input::placeholder { color: #8b9aaa; }
+    .ai-chat-input input:focus { border-color: #e8a84a; }
+    .ai-chat-input button {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #e8a84a 0%, #d4963e 100%);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+    .ai-chat-input button:hover { transform: scale(1.05); }
+    .ai-chat-input button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .ai-chat-input button svg { width: 20px; height: 20px; fill: #0c1218; }
+    .ai-typing {
+      display: flex;
+      gap: 4px;
+      padding: 12px 16px;
+      background: #1a2530;
+      border-radius: 16px;
+      border-bottom-left-radius: 4px;
+      width: fit-content;
+      border: 1px solid rgba(232, 168, 74, 0.15);
+    }
+    .ai-typing span {
+      width: 8px;
+      height: 8px;
+      background: #e8a84a;
+      border-radius: 50%;
+      animation: typing 1.4s infinite;
+    }
+    .ai-typing span:nth-child(2) { animation-delay: 0.2s; }
+    .ai-typing span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-8px); opacity: 1; }
+    }
+    @media (max-width: 480px) {
+      #ai-chat-window {
+        width: calc(100vw - 40px);
+        height: 70vh;
+        right: -10px;
+      }
+    }
+  </style>
+
+  <script>
+    (function() {
+      var welcomeMessage = "Здравствуйте! Я Агент Томасович — AI-консультант по разработке пищевых продуктов. Могу рассказать об услугах, ценах и процессе работы. О чём хотите узнать?";
+      var apiUrl = "/api/chat";
+
+      window.toggleChat = function() {
+        var win = document.getElementById('ai-chat-window');
+        win.classList.toggle('open');
+        if (win.classList.contains('open') && document.getElementById('chat-messages').children.length === 0) {
+          addMessage(welcomeMessage, 'assistant');
+        }
+      };
+
+      window.closeChat = function() {
+        document.getElementById('ai-chat-window').classList.remove('open');
+      };
+
+      window.handleKeyPress = function(e) {
+        if (e.key === 'Enter') sendMessage();
+      };
+
+      window.sendMessage = async function() {
+        var input = document.getElementById('user-message');
+        var message = input.value.trim();
+        var sendBtn = document.getElementById('send-btn');
+        if (!message) return;
+
+        addMessage(message, 'user');
+        input.value = '';
+        sendBtn.disabled = true;
+
+        var typingId = addTyping();
+
+        try {
+          var response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: message })
+          });
+
+          removeTyping(typingId);
+
+          if (!response.ok) {
+            var err = await response.json();
+            throw new Error(err.error || 'Ошибка сервера');
+          }
+
+          var data = await response.json();
+          addMessage(data.response, 'assistant');
+        } catch (err) {
+          removeTyping(typingId);
+          addMessage('Извините, произошла ошибка. Напишите напрямую: tomas@mirafruit.ru', 'error');
+        }
+
+        sendBtn.disabled = false;
+      };
+
+      function addMessage(text, role) {
+        var container = document.getElementById('chat-messages');
+        var div = document.createElement('div');
+        div.className = 'ai-message ' + role;
+        div.textContent = text;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+      }
+
+      function addTyping() {
+        var container = document.getElementById('chat-messages');
+        var div = document.createElement('div');
+        div.className = 'ai-typing';
+        div.innerHTML = '<span></span><span></span><span></span>';
+        div.id = 'typing-' + Date.now();
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+        return div.id;
+      }
+
+      function removeTyping(id) {
+        var el = document.getElementById(id);
+        if (el) el.remove();
+      }
+    })();
+  </script>
 </body>
 </html>
