@@ -101,33 +101,36 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Message required' });
     }
 
-    const response = await fetch('https://api.minimax.io/anthropic/v1/messages', {
+    const response = await fetch('https://api.minimax.io/v1/text/chatcompletion_v2', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${API_KEY}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'MiniMax-M2.5',
-        messages: [{ role: 'user', content: message }],
+        model: 'MiniMax-Text-01',
+        messages: [
+          { role: 'system', name: 'system', content: SYSTEM_PROMPT },
+          { role: 'user', name: 'user', content: message }
+        ],
         max_tokens: 1000,
-        temperature: 0.7,
-        system: SYSTEM_PROMPT
+        temperature: 0.7
       })
     });
 
     const data = await response.json();
     
-    if (!response.ok) {
-      throw new Error(data.error?.message || 'API error');
+    if (!response.ok || data.base_resp?.status_code !== 0) {
+      console.error('MiniMax API error:', JSON.stringify(data));
+      throw new Error(data.base_resp?.status_msg || data.error?.message || 'API error');
     }
 
-    const content = data?.content?.[0]?.text || 'Извините, не удалось получить ответ.';
+    const content = data?.choices?.[0]?.message?.content || 'Извините, не удалось получить ответ.';
     
     res.status(200).json({ response: content });
     
   } catch (err) {
-    console.error('Chat API error:', err);
+    console.error('Chat API error:', err.message);
     res.status(500).json({ error: 'Произошла ошибка. Попробуйте позже.' });
   }
 }
