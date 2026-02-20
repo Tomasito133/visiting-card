@@ -33,3 +33,7 @@ node_modules/
 dist/
 build/
 .cache/
+
+# Vercel (привязка проекта — локальная)
+.vercel/
+.vercel
