@@ -108,13 +108,13 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'MiniMax-Text-01',
+        model: 'M2-her',
         messages: [
-          { role: 'system', name: 'system', content: SYSTEM_PROMPT },
-          { role: 'user', name: 'user', content: message }
+          { role: 'system', name: 'Агент Томасович', content: SYSTEM_PROMPT },
+          { role: 'user', name: 'User', content: message }
         ],
-        max_tokens: 1000,
-        temperature: 0.7
+        max_completion_tokens: 1000,
+        temperature: 0.8
       })
     });
 
